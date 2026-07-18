@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RH — Roblox Scripter &amp; 3D Artist</title>
+<meta name="description" content="RH is a Roblox scripter and 3D artist with 3+ years of experience across 1.2M+ visits. Gameplay systems, economy design, UI, and custom builds.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0B0E14;
+    --surface:#121826;
+    --surface-2:#171F30;
+    --line:#242D3F;
+    --text:#E7EAF0;
+    --muted:#8A94A6;
+    --muted-2:#5C6579;
+    --amber:#FF9F1C;
+    --amber-dim:#7A5218;
+    --cyan:#4CC9F0;
+    --green:#5FE39A;
+    --mono:'JetBrains Mono', ui-monospace, monospace;
+    --sans:'Inter', system-ui, sans-serif;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto;}
+    *{animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important;}
+  }
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--sans);
+    line-height:1.6;
+    overflow-x:hidden;
+    background-image:
+      radial-gradient(circle at 15% 10%, rgba(255,159,28,0.06), transparent 40%),
+      radial-gradient(circle at 85% 30%, rgba(76,201,240,0.05), transparent 40%);
+  }
+  a{color:inherit; text-decoration:none;}
+  img{max-width:100%; display:block;}
+  .wrap{max-width:1120px; margin:0 auto; padding:0 24px;}
+  ::selection{background:var(--amber); color:#0B0E14;}
+
+  /* ---------- scrollbar ---------- */
+  ::-webkit-scrollbar{width:10px;}
+  ::-webkit-scrollbar-track{background:var(--bg);}
+  ::-webkit-scrollbar-thumb{background:var(--surface-2); border-radius:8px;}
+
+  /* ---------- nav ---------- */
+  header{
+    position:sticky; top:0; z-index:50;
+    background:rgba(11,14,20,0.85);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  nav{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:16px 24px;
+  }
+  .logo{
+    font-family:var(--mono); font-weight:700; font-size:20px;
+    letter-spacing:0.5px; display:flex; align-items:center; gap:8px;
+  }
+  .logo .dot{width:8px; height:8px; border-radius:50%; background:var(--amber); box-shadow:0 0 8px var(--amber);}
+  .nav-links{display:flex; gap:32px; font-family:var(--mono); font-size:13px; color:var(--muted);}
+  .nav-links a{transition:color 0.2s;}
+  .nav-links a:hover{color:var(--amber);}
+  .status-pill{
+    display:flex; align-items:center; gap:8px;
+    font-family:var(--mono); font-size:12px; color:var(--green);
+    border:1px solid rgba(95,227,154,0.3); background:rgba(95,227,154,0.08);
+    padding:6px 12px; border-radius:20px;
+  }
+  .status-pill .blink{width:6px; height:6px; border-radius:50%; background:var(--green); animation:blink 1.6s infinite;}
+  @keyframes blink{0%,100%{opacity:1;} 50%{opacity:0.2;}}
+  .burger{display:none;}
+
+  /* ---------- hero ---------- */
+  .hero{
+    padding:96px 0 80px;
+    display:grid; grid-template-columns:1.05fr 0.95fr; gap:56px; align-items:center;
+  }
+  .eyebrow{
+    font-family:var(--mono); font-size:12px; letter-spacing:2px; text-transform:uppercase;
+    color:var(--amber); margin-bottom:20px; display:flex; align-items:center; gap:10px;
+  }
+  .eyebrow::before{content:'//'; color:var(--muted-2);}
+  h1{
+    font-family:var(--mono); font-weight:700; font-size:clamp(32px,4.2vw,52px);
+    line-height:1.15; letter-spacing:-0.5px; margin-bottom:24px;
+  }
+  h1 .hl{color:var(--amber);}
+  .hero p.lead{color:var(--muted); font-size:17px; max-width:480px; margin-bottom:32px;}
+  .cta-row{display:flex; gap:14px; flex-wrap:wrap; margin-bottom:40px;}
+  .btn{
+    font-family:var(--mono); font-size:13px; font-weight:600;
+    padding:13px 22px; border-radius:6px; display:inline-flex; align-items:center; gap:8px;
+    transition:transform 0.2s, box-shadow 0.2s;
+    cursor:pointer; border:1px solid transparent;
+  }
+  .btn-primary{background:var(--amber); color:#0B0E14;}
+  .btn-primary:hover{transform:translateY(-2px); box-shadow:0 8px 24px rgba(255,159,28,0.25);}
+  .btn-ghost{border-color:var(--line); color:var(--text);}
+  .btn-ghost:hover{border-color:var(--amber); color:var(--amber); transform:translateY(-2px);}
+  .stat-row{display:flex; gap:36px; flex-wrap:wrap;}
+  .stat{font-family:var(--mono);}
+  .stat .num{font-size:22px; font-weight:700; color:var(--text);}
+  .stat .label{font-size:11px; color:var(--muted-2); text-transform:uppercase; letter-spacing:1px;}
+
+  /* editor panel */
+  .editor{
+    background:var(--surface); border:1px solid var(--line); border-radius:10px;
+    overflow:hidden; box-shadow:0 30px 60px -20px rgba(0,0,0,0.6);
+  }
+  .editor-top{
+    display:flex; align-items:center; gap:8px; padding:12px 16px;
+    background:var(--surface-2); border-bottom:1px solid var(--line);
+  }
+  .editor-dots{display:flex; gap:6px;}
+  .editor-dots span{width:10px; height:10px; border-radius:50%;}
+  .editor-dots span:nth-child(1){background:#FF5F56;}
+  .editor-dots span:nth-child(2){background:#FFBD2E;}
+  .editor-dots span:nth-child(3){background:#27C93F;}
+  .editor-tabs{display:flex; gap:2px; margin-left:12px; font-family:var(--mono); font-size:12px;}
+  .editor-tab{padding:6px 12px; color:var(--muted-2); border-radius:4px 4px 0 0;}
+  .editor-tab.active{background:var(--surface); color:var(--amber);}
+  .editor-body{
+    display:grid; grid-template-columns:36px 1fr; font-family:var(--mono); font-size:13.5px;
+    padding:20px 0; min-height:290px;
+  }
+  .gutter{color:var(--muted-2); text-align:right; padding-right:14px; user-select:none; line-height:1.9;}
+  .code{color:var(--text); line-height:1.9; padding-right:20px;}
+  .code .kw{color:var(--cyan);}
+  .code .str{color:var(--green);}
+  .code .com{color:var(--muted-2);}
+  .code .prop{color:#C6D0E0;}
+  .cursor{display:inline-block; width:8px; height:16px; background:var(--amber); vertical-align:middle; animation:blink 1s infinite;}
+
+  section{padding:88px 0; border-top:1px solid var(--line);}
+  .section-head{margin-bottom:48px; max-width:640px;}
+  .section-head .eyebrow{margin-bottom:14px;}
+  .section-head h2{font-family:var(--mono); font-size:clamp(26px,3vw,36px); font-weight:700; margin-bottom:14px;}
+  .section-head p{color:var(--muted); font-size:16px;}
+
+  /* about */
+  .about-grid{display:grid; grid-template-columns:1fr 1fr; gap:56px; align-items:start;}
+  .about-grid p{color:var(--muted); font-size:16px; margin-bottom:16px;}
+  .about-grid p strong{color:var(--text);}
+  .stat-grid{display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--line); border:1px solid var(--line); border-radius:10px; overflow:hidden;}
+  .stat-box{background:var(--surface); padding:26px 22px;}
+  .stat-box .num{font-family:var(--mono); font-size:30px; font-weight:800; color:var(--amber);}
+  .stat-box .label{font-family:var(--mono); font-size:11.5px; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-top:6px;}
+
+  /* services */
+  .service-grid{display:grid; grid-template-columns:1fr 1fr; gap:24px;}
+  .service-card{
+    background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:32px;
+    transition:border-color 0.25s, transform 0.25s;
+  }
+  .service-card:hover{border-color:var(--amber-dim); transform:translateY(-4px);}
+  .service-glyph{
+    font-family:var(--mono); font-size:20px; color:var(--amber);
+    width:44px; height:44px; border:1px solid var(--line); border-radius:8px;
+    display:flex; align-items:center; justify-content:center; margin-bottom:20px;
+  }
+  .service-card h3{font-family:var(--mono); font-size:18px; margin-bottom:10px;}
+  .service-card p{color:var(--muted); font-size:14.5px; margin-bottom:18px;}
+  .service-card ul{list-style:none; display:flex; flex-direction:column; gap:9px;}
+  .service-card li{font-size:13.5px; color:var(--muted); padding-left:18px; position:relative;}
+  .service-card li::before{content:'▸'; position:absolute; left:0; color:var(--cyan);}
+
+  /* work */
+  .project{
+    background:var(--surface); border:1px solid var(--line); border-radius:12px;
+    overflow:hidden; margin-bottom:28px;
+    display:grid; grid-template-columns:1fr 1fr;
+  }
+  .project.reverse{grid-template-columns:1fr 1fr;}
+  .project.reverse .project-media{order:2;}
+  .project-media{
+    position:relative; width:500px; flex-shrink:0;
+    background:
+      repeating-linear-gradient(135deg, rgba(255,159,28,0.06) 0 2px, transparent 2px 14px),
+      linear-gradient(160deg, var(--surface-2), #0d1119);
+    border-right:1px solid var(--line);
+    display:flex; align-items:center; justify-content:center;
+    flex-direction:column; gap:10px;
+  }
+  .project.reverse .project-media{border-right:none; border-left:1px solid var(--line);}
+  .placeholder-tag{
+    font-family:var(--mono); font-size:11px; color:var(--muted-2);
+    border:1px dashed var(--line); padding:6px 12px; border-radius:6px;
+    letter-spacing:1px; text-transform:uppercase;
+  }
+  .placeholder-icon{font-family:var(--mono); font-size:26px; color:var(--muted-2);}
+  .project-body{padding:32px;}
+  .project-tag{font-family:var(--mono); font-size:11px; color:var(--cyan); text-transform:uppercase; letter-spacing:1.5px; margin-bottom:10px; display:block;}
+  .project-body h3{font-family:var(--mono); font-size:22px; margin-bottom:12px;}
+  .project-body > p{color:var(--muted); font-size:14.5px; margin-bottom:18px;}
+  .project-body ul{list-style:none; display:flex; flex-direction:column; gap:8px; margin-bottom:22px;}
+  .project-body li{font-size:13.5px; color:var(--muted); padding-left:18px; position:relative;}
+  .project-body li::before{content:'✓'; position:absolute; left:0; color:var(--green);}
+  .project-link{font-family:var(--mono); font-size:13px; color:var(--amber); border-bottom:1px solid var(--amber-dim); padding-bottom:2px;}
+  .project-link:hover{border-color:var(--amber);}
+
+  /* demo chips + lazy video modal */
+  .demo-chips-label{
+    font-family:var(--mono); font-size:11px; color:var(--muted-2); text-transform:uppercase;
+    letter-spacing:1.5px; margin-bottom:10px;
+  }
+  .demo-chips{display:flex; flex-wrap:wrap; gap:10px; margin-bottom:22px;}
+  .demo-chip{
+    display:inline-flex; align-items:center; gap:9px;
+    font-family:var(--mono); font-size:12px; color:var(--cyan); background:rgba(76,201,240,0.07);
+    border:1px solid rgba(76,201,240,0.3);
+    padding:8px 14px 8px 10px; border-radius:20px; cursor:pointer; transition:background 0.2s, border-color 0.2s, transform 0.2s;
+  }
+  .demo-chip:hover{background:rgba(76,201,240,0.16); border-color:var(--cyan); transform:translateY(-1px);}
+  .demo-chip .play{
+    width:18px; height:18px; border-radius:50%; flex-shrink:0;
+    background:var(--cyan); color:#04202b;
+    display:inline-flex; align-items:center; justify-content:center;
+    font-size:8px; animation:chip-pulse 2.2s infinite;
+  }
+  @keyframes chip-pulse{
+    0%,100%{box-shadow:0 0 0 0 rgba(76,201,240,0.55);}
+    60%{box-shadow:0 0 0 6px rgba(76,201,240,0);}
+  }
+  .video-modal{
+    position:fixed; inset:0; z-index:200; padding:24px;
+    background:rgba(5,7,11,0.88); backdrop-filter:blur(6px);
+    display:flex; align-items:center; justify-content:center;
+    opacity:0; pointer-events:none; transition:opacity 0.25s;
+  }
+  .video-modal.open{opacity:1; pointer-events:auto;}
+  .video-modal-inner{
+    width:100%; max-width:820px; position:relative;
+    background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:22px;
+  }
+  .video-close{
+    position:absolute; top:14px; right:14px;
+    width:32px; height:32px; border-radius:8px;
+    background:var(--surface-2); border:1px solid var(--line); color:var(--text);
+    display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:14px;
+  }
+  .video-close:hover{border-color:var(--amber); color:var(--amber);}
+  .video-modal-title{font-family:var(--mono); font-size:14px; color:var(--text); padding-right:40px; margin-bottom:4px;}
+  .video-modal-hint{font-family:var(--mono); font-size:11.5px; color:var(--muted-2); margin-bottom:16px;}
+  .video-frame-wrap{position:relative; width:100%; padding-top:56.25%; background:#000; border-radius:8px; overflow:hidden;}
+  .video-frame-wrap iframe{position:absolute; inset:0; width:100%; height:100%; border:0;}
+
+  /* process */
+  .process-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:24px; margin-bottom:40px;}
+  .process-step{background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:28px;}
+  .process-step .step-num{font-family:var(--mono); font-size:12px; color:var(--amber); margin-bottom:14px;}
+  .process-step h3{font-family:var(--mono); font-size:16px; margin-bottom:10px;}
+  .process-step p{color:var(--muted); font-size:14px;}
+  .process-note{
+    background:var(--surface-2); border:1px solid var(--line); border-radius:10px; padding:22px 26px;
+    font-size:14.5px; color:var(--muted);
+  }
+  .process-note strong{color:var(--text);}
+
+  /* contact */
+  .contact-panel{
+    background:var(--surface); border:1px solid var(--line); border-radius:12px;
+    padding:0; overflow:hidden;
+  }
+  .terminal-top{
+    display:flex; align-items:center; gap:8px; padding:12px 16px;
+    background:var(--surface-2); border-bottom:1px solid var(--line);
+    font-family:var(--mono); font-size:12px; color:var(--muted-2);
+  }
+  .terminal-top .editor-dots span{width:10px;height:10px;}
+  .terminal-body{padding:36px 32px; font-family:var(--mono); font-size:14.5px;}
+  .terminal-line{margin-bottom:10px; color:var(--muted);}
+  .terminal-line .prompt{color:var(--green); margin-right:8px;}
+  .terminal-line .flag{color:var(--cyan);}
+  .contact-links{display:flex; gap:16px; flex-wrap:wrap; margin-top:24px;}
+  .contact-links a{
+    display:flex; align-items:center; gap:10px;
+    border:1px solid var(--line); border-radius:8px; padding:12px 18px;
+    font-family:var(--sans); font-size:14px; transition:border-color 0.2s, transform 0.2s;
+  }
+  .contact-links a:hover{border-color:var(--amber); transform:translateY(-2px);}
+  .contact-links .ic{color:var(--amber); font-family:var(--mono);}
+
+  footer{border-top:1px solid var(--line); padding:32px 0; }
+  footer .wrap{display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;}
+  footer p{font-family:var(--mono); font-size:12px; color:var(--muted-2);}
+
+  .reveal{opacity:0; transform:translateY(18px); transition:opacity 0.6s ease, transform 0.6s ease;}
+  .reveal.in{opacity:1; transform:translateY(0);}
+
+  @media (max-width:860px){
+    .hero{grid-template-columns:1fr; padding-top:56px;}
+    .about-grid{grid-template-columns:1fr;}
+    .service-grid{grid-template-columns:1fr;}
+    .process-grid{grid-template-columns:1fr;}
+    .project{grid-template-columns:1fr;}
+    .project.reverse .project-media{order:0;}
+    .nav-links{display:none;}
+    .stat-grid{grid-template-columns:1fr;}
+    .video-modal{padding:12px;}
+    .video-modal-inner{padding:16px;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <nav class="wrap">
+    <div class="logo"><span class="dot"></span>RH_DEV</div>
+    <div class="nav-links">
+      <a href="#about">about</a>
+      <a href="#services">services</a>
+      <a href="#work">work</a>
+      <a href="#process">process</a>
+      <a href="#contact">contact</a>
+    </div>
+    <div class="status-pill"><span class="blink"></span>Open for commissions</div>
+  </nav>
+</header>
+
+<section class="hero wrap" style="border-top:none;">
+  <div>
+    <div class="eyebrow">Roblox Scripter &amp; 3D Artist</div>
+    <h1>I build the game systems that make players <span class="hl">come back</span>, not just show up.</h1>
+    <p class="lead">3+ years scripting gameplay loops, economies, and UI for Roblox games — plus the low-poly &amp; realistic builds to put them in. Clean, scalable code that holds up after launch.</p>
+    <div class="cta-row">
+      <a href="#work" class="btn btn-primary">See my work →</a>
+      <a href="#contact" class="btn btn-ghost">Start a commission</a>
+    </div>
+    <div class="stat-row">
+      <div class="stat"><div class="num">1.2M+</div><div class="label">Visits shipped</div></div>
+      <div class="stat"><div class="num">3+ yrs</div><div class="label">Experience</div></div>
+      <div class="stat"><div class="num">3</div><div class="label">Disciplines: script + build + 3D modeling</div></div>
+    </div>
+  </div>
+
+  <div class="editor">
+    <div class="editor-top">
+      <div class="editor-dots"><span></span><span></span><span></span></div>
+      <div class="editor-tabs">
+        <div class="editor-tab active">developer.lua</div>
+        <div class="editor-tab">README.md</div>
+      </div>
+    </div>
+    <div class="editor-body">
+      <div class="gutter">1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10</div>
+      <div class="code" id="typedCode"></div>
+    </div>
+  </div>
+</section>
+
+<section id="about">
+  <div class="wrap about-grid">
+    <div class="reveal">
+      <div class="eyebrow">About</div>
+      <h2 style="font-family:var(--mono); font-size:clamp(24px,3vw,32px); margin-bottom:20px;">Hello, I'm RH.</h2>
+      <p>I'm a Roblox developer specializing in <strong>scripting, building, and 3D modeling</strong>. Over the last 3+ years I've contributed to games with a combined <strong>1.2M+ visits</strong>, working on everything from tycoon mechanics and economy systems to immersive low-poly and realistic environments.</p>
+      <p>I care about two things on every project: code that stays clean and scalable after I hand it off, and builds that fit the exact feel your game is going for. Whether you need a single system fixed or a full gameplay loop built from scratch, I treat commissions like a real product, not a quick script dump.</p>
+    </div>
+    <div class="stat-grid reveal">
+      <div class="stat-box"><div class="num">1.2M+</div><div class="label">Total visits across shipped games</div></div>
+      <div class="stat-box"><div class="num">3+</div><div class="label">Years of experience</div></div>
+      <div class="stat-box"><div class="num">Full-stack</div><div class="label">Scripting to 3D asset builds</div></div>
+      <div class="stat-box"><div class="num">Solo-built</div><div class="label">Systems, UI &amp; economy, end to end</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="services">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="eyebrow">Services</div>
+      <h2>Three disciplines, one dev.</h2>
+      <p>Most clients need one or both of these — here's what's covered under each.</p>
+    </div>
+    <div class="service-grid">
+      <div class="service-card reveal">
+        <div class="service-glyph">&gt;_</div>
+        <h3>Scripting</h3>
+        <p>Clean, optimized, and scalable code built for single-player and multiplayer environments alike.</p>
+        <ul>
+          <li>Gameplay loops &amp; core mechanics</li>
+          <li>Economy systems (buying, selling, monetization, gifting)</li>
+          <li>DataStore save/load systems</li>
+          <li>UI systems — menus, HUDs, shops</li>
+          <li>Global/live systems via HTTP Service</li>
+          <li>Admin &amp; moderation panels</li>
+          <li>Bug fixing &amp; code review</li>
+        </ul>
+      </div>
+      <div class="service-card reveal">
+        <div class="service-glyph">⬡</div>
+        <h3>Building &amp; 3D Modeling</h3>
+        <p>Environments and props tailored to your game's specific feel — from stylized to realistic.</p>
+        <ul>
+          <li>Low-poly environments &amp; maps</li>
+          <li>Realistic architectural builds</li>
+          <li>Custom props &amp; asset modeling</li>
+          <li>Performance-friendly geometry</li>
+          <li>Thumbnail &amp; promo scene builds</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="work">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="eyebrow">Selected Work</div>
+      <h2>A few things I've shipped.</h2>
+      <p>A mix of solo-built games and ongoing studio collaborations. Real screenshots go here — placeholders mark exactly where; swap the <code>.project-media</code> block with your image and it slots right in. Tap a chip below any project to watch that system in action.</p>
+    </div>
+
+    <div class="project reveal">
+      <div class="project-media">
+        <img src="city-incremental.png" alt="City Incremental Game Icon" style="width: 100%; height: 100%; object-fit: cover; display: block;">
+      </div>
+      <div class="project-body">
+        <span class="project-tag">Team contribution · The Social Hour</span>
+        <h3>🏢 City Incremental 🏢</h3>
+        <p>Ongoing contributor — shipping new features, live maintenance, and system upgrades on an existing codebase.</p>
+        <ul>
+          <li>Tutorial system built to streamline player onboarding</li>
+          <li>Scalable gamepasses &amp; developer products system</li>
+          <li>Custom funnel analytics for retention &amp; drop-off tracking</li>
+          <li>"CityBits" incremental economy — passive income &amp; upgrades</li>
+          <li>Profile system with persistent lifetime stat tracking</li>
+          <li>Modular, global leaderboard system built for scale</li>
+        </ul>
+        <div class="demo-chips-label">Watch it in action</div>
+        <div class="demo-chips">
+          <button class="demo-chip" onclick="openVideo('1hsj_HaGz96U7SNG0yjXaEJVgEeyVxbl_','Tutorial System — City Incremental')"><span class="play">▶</span>Tutorial system</button>
+          <button class="demo-chip" onclick="openVideo('16qGTcVPtv1Z9LRTO-JDSFd7txQimNCfP','CityBits Economy — City Incremental')"><span class="play">▶</span>CityBits economy</button>
+          <button class="demo-chip" onclick="openVideo('146NDSKaQqX_im6b4rz6o0pay7Yj2UreM','Profile &amp; Lifetime Stats — City Incremental')"><span class="play">▶</span>Profile &amp; stats</button>
+          <button class="demo-chip" onclick="openVideo('1jJ_NaltHPDK6vG6m5Fy8xVpTNvi36X1E','Global Leaderboards — City Incremental')"><span class="play">▶</span>Leaderboards</button>
+          <button class="demo-chip" onclick="openVideo('1EYurOnENkZf7MqEheLQIen2rYVLgWmfs','Packs &amp; Developer Products — City Incremental')"><span class="play">▶</span>Packs &amp; dev products</button>
+          <button class="demo-chip" onclick="openVideo('14zE5vm7EPELSgO6AWDfYrrrm2OkfTUlw','Currency Exchange System — City Incremental')"><span class="play">▶</span>Currency exchange</button>
+          <button class="demo-chip" onclick="openVideo('1XbGVPPYS4vcBmfZ7zd1AWw1HRP3Jc3nc','Playtime Rewards System — City Incremental')"><span class="play">▶</span>Playtime rewards</button>
+        </div>
+        <a class="project-link" href="https://www.roblox.com/communities/6483409/The-Social-Hour#!/about" target="_blank" rel="noopener">The Social Hour →</a>
+      </div>
+    </div>
+
+    <div class="project reverse reveal">
+      <div class="project-media">
+        <img src="steal-a-clashrot.png" alt="Steal a ClashRot Game Icon" style="width: 100%; height: 100%; object-fit: cover; display: block;">
+      </div>
+      <div class="project-body">
+        <span class="project-tag">Team contribution · SEE_Studios</span>
+        <h3>Steal a ClashRot </h3>
+        <p>Ongoing contributor — maintaining the live game and shipping new features alongside the existing team.</p>
+        <ul>
+          <li>Configured &amp; enhanced existing systems — admin commands, gameplay features</li>
+          <li>Built new features from scratch, including group-join gifts</li>
+        </ul>
+        <a class="project-link" href="https://www.roblox.com/games/125032032820165/Steal-a-ClashRot" target="_blank" rel="noopener">View on Roblox →</a>
+      </div>
+    </div>
+
+    <div class="project reveal">
+      <div class="project-media">
+        <img src="grow-a-grocery.png" alt="Grow a Grocery Game Icon" style="width: 100%; height: 100%; object-fit: cover; display: block;">
+      </div>
+      <div class="project-body">
+        <span class="project-tag">Solo project · Live</span>
+        <h3>🛒 Grow a Grocery 🛒</h3>
+        <p>Scripted the entire game solo — every system, all UI, and the thumbnail. A full store-building &amp; economy loop.</p>
+        <ul>
+          <li>Placement system for building &amp; customizing stores</li>
+          <li>Core UI systems — menus, shop, HUD</li>
+          <li>DataStore save/load for player progress</li>
+          <li>Plot system</li>
+          <li>Global stock system via HTTP Service</li>
+          <li>Full economy — buying, selling, monetization, gifting</li>
+        </ul>
+        <div class="demo-chips-label">Watch it in action</div>
+        <div class="demo-chips">
+          <button class="demo-chip" onclick="openVideo('197vwELTyIneTqdLvjKpUbKrGc2Iw3LsH','Global Shop &amp; Placement System — Grow a Grocery')"><span class="play">▶</span>Shop &amp; placement</button>
+          <button class="demo-chip" onclick="openVideo('1ui_MR4pZ62bCIiPubSexlKfAEikez_Uj','Harvest &amp; Selling System — Grow a Grocery')"><span class="play">▶</span>Harvest &amp; selling</button>
+        </div>
+        <a class="project-link" href="https://www.roblox.com/games/85698843236318/SUMMER-Grow-a-Grocery" target="_blank" rel="noopener">View on Roblox →</a>
+      </div>
+    </div>
+
+    <div class="project reverse reveal">
+      <div class="project-media">
+        <img src="water-obby.jpg" alt="Water Obby Game Icon" style="width: 100%; height: 100%; object-fit: cover; display: block;">
+      </div>
+      <div class="project-body">
+        <span class="project-tag">Solo project · Live</span>
+        <h3>🌊 Water Obby 🌊</h3>
+        <p>Built and scripted the entire obby — core gameplay, UI, and shop systems, start to finish.</p>
+        <ul>
+          <li>Checkpoint system for player progression</li>
+          <li>Custom obstacles &amp; gameplay mechanics</li>
+          <li>Full UI — menus, HUD, shop</li>
+          <li>DataStore save/load for progress</li>
+          <li>Trail shop with unlockable cosmetics</li>
+        </ul>
+        <a class="project-link" href="https://www.roblox.com/games/84571065275504/NEW-Water-Obby" target="_blank" rel="noopener">View on Roblox →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="process">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="eyebrow">How I work</div>
+      <h2>Simple, transparent, pay-per-progress.</h2>
+      <p>No surprise invoices. You know what you're paying for at every stage.</p>
+    </div>
+    <div class="process-grid">
+      <div class="process-step reveal">
+        <div class="step-num">STEP 01</div>
+        <h3>Scope the project</h3>
+        <p>We talk through what you need. Clearly defined tasks get a flat quote; anything uncertain (like debugging someone else's code) gets scoped separately once I've reviewed it.</p>
+      </div>
+      <div class="process-step reveal">
+        <div class="step-num">STEP 02</div>
+        <h3>Fixed quote, no guesswork</h3>
+        <p>You get a rate for the defined work upfront. I accept real money (preferred) or Robux — Robux payments cover the platform tax.</p>
+      </div>
+      <div class="process-step reveal">
+        <div class="step-num">STEP 03</div>
+        <h3>Pay-per-progress</h3>
+        <p>Payment tracks delivery — 20% done means 20% paid. You always see progress before paying for it.</p>
+      </div>
+    </div>
+    <div class="process-note reveal">
+      <strong>Note on debugging:</strong> fixing existing code is billed based on actual time and complexity after I've reviewed it, since it's the one part of a project that's hard to estimate blind. I'll always flag this upfront before it affects a deadline.
+    </div>
+  </div>
+</section>
+
+<section id="contact">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="eyebrow">Contact</div>
+      <h2>Let's build something.</h2>
+      <p>Send a message with what you need built and a rough deadline — that's all I need to get started on a quote.</p>
+    </div>
+    <div class="contact-panel reveal">
+      <div class="terminal-top">
+        <div class="editor-dots"><span></span><span></span><span></span></div>
+        <span>contact.sh</span>
+      </div>
+      <div class="terminal-body">
+        <div class="terminal-line"><span class="prompt">&gt;</span>Message me on Discord: @rhdev01</div>
+        <div class="terminal-line"><span class="prompt">&gt;</span>Include: what you need, deadline, and Robux or real-money payment.</div>
+      </div>
+      <div class="contact-links" style="padding:0 32px 32px;">
+        <a href="https://www.roblox.com/users/2630389544/profile" target="_blank" rel="noopener"><span class="ic">[R]</span> Roblox — Shadow_GamerXD4</a>
+        <a href="#"><span class="ic">[D]</span> Discord — rhdev01</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p>© RH — Roblox Development</p>
+    <p id="lastUpdated">Last updated: 18th july 2026</p>
+  </div>
+</footer>
+
+<div class="video-modal" id="videoModal" onclick="if(event.target===this) closeVideo()">
+  <div class="video-modal-inner">
+    <button class="video-close" onclick="closeVideo()" aria-label="Close video">✕</button>
+    <div class="video-modal-title" id="videoModalTitle"></div>
+    <div class="video-modal-hint">Tip: switch playback to 1080p in the player controls for the clearest view.</div>
+    <div class="video-frame-wrap" id="videoFrameWrap"></div>
+  </div>
+</div>
+
+<script>
+  // Typing animation for hero editor
+  const codeLines = [
+    {t:'kw', v:'local'}, {t:'plain', v:' Developer = {'},
+    {t:'nl'},
+    {t:'prop', v:'  name'}, {t:'plain', v:' = '}, {t:'str', v:'"RH"'}, {t:'plain', v:','},
+    {t:'nl'},
+    {t:'prop', v:'  role'}, {t:'plain', v:' = '}, {t:'str', v:'"Scripter / 3D Artist"'}, {t:'plain', v:','},
+    {t:'nl'},
+    {t:'prop', v:'  experience'}, {t:'plain', v:' = '}, {t:'str', v:'"3+ years"'}, {t:'plain', v:','},
+    {t:'nl'},
+    {t:'prop', v:'  visitsShipped'}, {t:'plain', v:' = '}, {t:'str', v:'"1,200,000+"'}, {t:'plain', v:','},
+    {t:'nl'},
+    {t:'prop', v:'  status'}, {t:'plain', v:' = '}, {t:'str', v:'"Available"'},
+    {t:'nl'},
+    {t:'plain', v:'}'},
+    {t:'nl'}, {t:'nl'},
+    {t:'com', v:'-- open to Robux or real-money commissions'},
+  ];
+
+  function renderStatic(){
+    const el = document.getElementById('typedCode');
+    let html = '';
+    codeLines.forEach(seg=>{
+      if(seg.t==='nl'){ html += '<br>'; }
+      else if(seg.t==='kw'){ html += `<span class="kw">${seg.v}</span>`; }
+      else if(seg.t==='str'){ html += `<span class="str">${seg.v}</span>`; }
+      else if(seg.t==='com'){ html += `<span class="com">${seg.v}</span>`; }
+      else if(seg.t==='prop'){ html += `<span class="prop">${seg.v}</span>`; }
+      else { html += seg.v; }
+    });
+    el.innerHTML = html;
+  }
+
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if(prefersReduced){
+    renderStatic();
+  } else {
+    const el = document.getElementById('typedCode');
+    let flatChars = [];
+    codeLines.forEach(seg=>{
+      if(seg.t==='nl'){ flatChars.push({br:true}); }
+      else {
+        for(const c of seg.v){ flatChars.push({c, t:seg.t}); }
+      }
+    });
+    let i = 0;
+    function typeStep(){
+      if(i > flatChars.length){ 
+        // blinking cursor at end
+        el.innerHTML += '<span class="cursor"></span>';
+        return;
+      }
+      let html = '';
+      let openSpan = false;
+      let curType = null;
+      for(let j=0;j<i;j++){
+        const item = flatChars[j];
+        if(item.br){ if(openSpan){html+='</span>'; openSpan=false;} html += '<br>'; curType=null; continue; }
+        if(item.t !== curType){
+          if(openSpan) html += '</span>';
+          if(item.t !== 'plain'){ html += `<span class="${item.t}">`; openSpan = true; }
+          else { openSpan = false; }
+          curType = item.t;
+        }
+        html += item.c === '<' ? '&lt;' : item.c === '>' ? '&gt;' : item.c;
+      }
+      if(openSpan) html += '</span>';
+      html += '<span class="cursor"></span>';
+      el.innerHTML = html;
+      i++;
+      setTimeout(typeStep, 14);
+    }
+    typeStep();
+  }
+
+  // Scroll reveal
+  const revealEls = document.querySelectorAll('.reveal');
+  if(prefersReduced){
+    revealEls.forEach(el=>el.classList.add('in'));
+  } else {
+    const io = new IntersectionObserver((entries)=>{
+      entries.forEach(entry=>{
+        if(entry.isIntersecting){
+          entry.target.classList.add('in');
+          io.unobserve(entry.target);
+        }
+      });
+    }, {threshold:0.15});
+    revealEls.forEach(el=>io.observe(el));
+  }
+
+  // Lazy-loaded demo videos — nothing loads until a chip is clicked,
+  // and the iframe is destroyed on close so it stops loading/playing.
+  function openVideo(fileId, title){
+    document.getElementById('videoModalTitle').textContent = title;
+    document.getElementById('videoFrameWrap').innerHTML =
+      '<iframe src="https://drive.google.com/file/d/' + fileId + '/preview" allow="autoplay" allowfullscreen loading="lazy"></iframe>';
+    document.getElementById('videoModal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeVideo(){
+    document.getElementById('videoModal').classList.remove('open');
+    document.getElementById('videoFrameWrap').innerHTML = '';
+    document.body.style.overflow = '';
+  }
+  document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeVideo(); });
+</script>
+
+</body>
+</html>
